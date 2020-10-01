@@ -1,0 +1,106 @@
+.game-container {
+    width: 500px;
+    height: 730px;
+    position: absolute;
+    left: 80px;
+}
+
+.sky {
+    background-color: lightblue;
+    width: 500px;
+    height: 580px;
+    position: absolute;
+}
+
+.border-left {
+    width: 75px;
+    height: 730px;
+    position: absolute;
+    background-color: white;
+    z-index: +2;
+}
+
+.border-right {
+    width: 80px;
+    height: 730px;
+    position: absolute;
+    background-color: white;
+    z-index: +2;
+    left: 580px;
+}
+
+.border-top {
+    width: 660px;
+    height: 50px;
+    position: absolute;
+    background-color: white;
+    z-index: +2;
+    top: -50px;
+}
+
+#gameScore {
+    height: 100%;
+    font-size: 30px;
+    color: black;
+    margin: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: +1;
+}
+
+#highScore {
+    height: 100%;
+    font-size: 30px;
+    color: black;
+    margin: 0;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: +1;
+    padding-right: 50px;
+}
+
+.ground {
+    background-color: brown;
+    width: 500px;
+    height: 150px;
+    position: absolute;
+    top: 580px;
+    z-index: +1;
+}
+
+.birdImg {
+    /* background-color: yellow; */
+    position: absolute;
+    width: 100px;
+    height: 100px;
+}
+
+.pipe {
+    background-color: green;
+    width: 60px;
+    height: 300px;
+    position: absolute;
+}
+
+.topPipe {
+    background-color: green;
+    width: 60px;
+    height: 300px;
+    position: absolute;
+}
+
+.wall {
+    background-color: red;
+    width: 5px;
+    height: 150px;
+    position: absolute;
+}
+
+.bullet {
+    width: 16px;
+    height: 40px;
+    transform: none;
+    position: absolute;
+  }
