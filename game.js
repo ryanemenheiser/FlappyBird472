@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function resetGame() {
         score = 0;
         $("#gameOver").hide();
+        $(".birdImg").css({ 'transform': 'rotate(' + 0 + 'deg)' });
         isGameOver = false;
         birdBottom = 100;
         gameTimer = setInterval(updateGame, 10);
