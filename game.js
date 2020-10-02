@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     firebase.initializeApp(firebaseConfig);
 
     var database = firebase.database();
- 
+
     const bird = document.querySelector('.birdImg');
     const display = document.querySelector('.game-container');
 
@@ -22,8 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let birdBottom = 100;
     let gravity = 1;
     let isGameOver = false;
-    let bulletCount = 0;
-    //let lock = false;
     let score = 0;
     let highScore = 0;
     database.ref("sharedHighScore").on("value", function (snapshot) {
@@ -34,33 +32,39 @@ document.addEventListener('DOMContentLoaded', () => {
         birdBottom -= gravity;
         bird.style.bottom = birdBottom + 'px';
         bird.style.left = birdLeft + 'px';
-        //bulletCollisionDetect();
-        //updateBullets();
+        if (birdBottom <= -30)
+            gameOver();
     }
     let gameTimer = setInterval(updateGame, 10);
+    let pipeTimer = setInterval(generatePipe, 3000);
 
     function controller(e) {
-        if (e.keyCode === 32) {
+        if (!isGameOver && e.keyCode === 32) {
             jump();
         }
-        // if (e.keyCode === 70) {
-        //     //lock = true;
-        //     let xloc = parseFloat(bird.style.left);
-        //     let yloc = parseFloat(bird.style.bottom);
-        //     //console.log("BOTTOM: " + yloc);
-        //     //console.log("bird: " + xloc + ", " + yloc);
-        //     fireBullet(xloc, yloc, bulletCount);
-        //     // setTimeout(function () {
-        //     //     lock = false;
-        //     // }, 250);
-        //     console.log("shooting");
-        // }
+        if (isGameOver && e.keyCode === 82) {
+            resetGame();
+        }
+    }
+
+    function resetGame() {
+        score = 0;
+        $("#gameOver").hide();
+        isGameOver = false;
+        birdBottom = 100;
+        gameTimer = setInterval(updateGame, 10);
+        pipeTimer = setInterval(generatePipe, 3000);
+        console.log("reset game");
     }
 
     function jump() {
         if (birdBottom < 500) birdBottom += 50;
         bird.style.bottom = birdBottom + 'px';
-        //console.log(birdBottom);
+        // function rotate(degree) {
+        //     $(".birdImg").css({ 'transform': 'rotate(' + (degree) + 'deg)' });
+        // }
+        // rotate(-30);
+        // setInterval(rotate(0), 2000);
     }
     document.addEventListener('keyup', controller);
 
@@ -83,125 +87,44 @@ document.addEventListener('DOMContentLoaded', () => {
         pipe.style.bottom = pipeBottom + 'px';
         topPipe.style.bottom = pipeBottom + gap + 'px';
 
-        //add walls to pipe
-        // let wallLeft = 500;
-        // let wallBottom = randHeight + 300;
-        // const wall = document.createElement('div');
-        // if (!isGameOver) wall.classList.add('wall');
-        // display.appendChild(wall);
-        // wall.style.left = wallLeft + 'px';
-        // wall.style.bottom = wallBottom + 'px';
         if (!isGameOver) {
             updateScore();
         }
 
-
         function movePipe() {
             pipeLeft -= 2;
-            // wallLeft -= 2;
             pipe.style.left = pipeLeft + 'px';
-            // wall.style.left = wallLeft + 'px';
             topPipe.style.left = pipeLeft + 'px';
 
             if (pipeLeft === -60) {
                 clearInterval(timer);
                 display.removeChild(pipe);
-                // display.removeChild(wall);
-                display.removeChild(topPipe)
+                display.removeChild(topPipe);
             }
-            if (
-                pipeLeft > 200 && pipeLeft < 280 && birdLeft === 220 && (birdBottom < pipeBottom + 115 || birdBottom > pipeBottom + gap - 225) || birdBottom === -30) {
+            if ((pipeLeft > 200 && pipeLeft < 280 && birdLeft === 220 && (birdBottom < pipeBottom + 115 || birdBottom > pipeBottom + gap - 225)) || birdBottom <= -30) {
+                console.log("collision detected");
+                console.log("Bird position: " + birdLeft + ", " + birdBottom);
+                console.log("Pipe position: " + pipe.style.left + ", " + pipe.style.bottom);
+                console.log("Top pipe position: " + topPipe.style.left + ", " + topPipe.style.bottom);
+                if (display.contains(pipe) && display.contains(topPipe)) {
+                    display.removeChild(pipe);
+                    display.removeChild(topPipe);
+                }
                 gameOver();
                 clearInterval(timer);
             }
         }
-        let timer = setInterval(movePipe, 20);
-        if (!isGameOver) setTimeout(generatePipe, 3000);
+        let timer;
+        if (!isGameOver) timer = setInterval(movePipe, 20);
     }
-    generatePipe();
-
-
     function gameOver() {
+        console.log("Game over");
+        $("#gameOver").show();
+        $(".birdImg").css({ 'transform': 'rotate(' + (-90) + 'deg)' });
         clearInterval(gameTimer);
+        clearInterval(pipeTimer);
         isGameOver = true;
-        document.removeEventListener('keyup', controller);
-    }
-
-    function fireBullet(x, y, num) {
-        bulletCount++;
-        let bul_img = `<img id=${num} class='bullet' src='assets/bullet.png' style='left: ${x +
-            60}px; bottom: ${y}px; width: ${16}px; height: ${40}px; transform: rotate(90deg);'>`;
-        document.getElementById("bulletListDiv").innerHTML += bul_img;
-    }
-
-    function updateBullets() {
-        let bList = document.getElementsByClassName("bullet");
-        for (let bullet of bList) {
-            let bullet_x = parseFloat(bullet.style.left);
-            let bullet_y = parseFloat(bullet.style.bottom);
-            bullet_x += 5;
-            //bullet_y += 0;
-            bullet.style.left = bullet_x + "px";
-            bullet.style.bottom = bullet_y + "px";
-            // console.log("bird: " + birdLeft + ", " + birdBottom);
-            // console.log("bullet: " + bullet_x + ", " + bullet_y);
-            if (
-                bullet_x > 500 ||
-                bullet_y < 0 ||
-                bullet_y > 730 ||
-                bullet_y < 0
-            ) {
-                bullet.remove();
-            }
-        }
-    }
-
-    //doesn't work
-    function bulletCollisionDetect() {
-        // let wallList = document.getElementsByClassName("wall");
-        // for (let wall of wallList) {
-        //     let bList = document.getElementsByClassName("bullet");
-        //     for (let bullet of bList) {
-        //         if (bulletCollide(wall, bullet)) {
-        //             console.log("removed bullet from wall");
-        //             bullet.remove();
-        //         }
-        //     }
-        // }
-
-        let pipe = document.getElementById("pipe");
-        //for (let pipe of pipeList) {
-        let bList = document.getElementsByClassName("bullet");
-        for (let bullet of bList) {
-            if (bulletCollide(pipe, bullet)) {
-                console.log("removed bullet from pipe");
-                bullet.remove();
-            }
-        }
-        //}
-    }
-
-    //doesn't work
-    function bulletCollide(wall, bullet) {
-
-        let wall_x = parseFloat(wall.style.left);
-        let wall_y = parseFloat(wall.style.bottom);
-        //let wall_w = parseFloat(wall.style.width);
-        let wall_h = parseFloat(wall.style.height);
-
-        let bullet_x = parseFloat(bullet.style.left);
-        let bullet_y = parseFloat(bullet.style.bottom);
-        //let bullet_w = parseFloat(bullet.style.width);
-        //let bullet_h = parseFloat(bullet.style.height);
-        //console.log(wall_y);
-        // return !(
-        //     wall_y + wall_h < bullet_y ||
-        //     wall_y > bullet_y ||
-        //     wall_x < bullet_x ||
-        //     wall_x > bullet_x + wall_h
-        // );
-        //if (!(wall_x > 200 && wall_x < 280 && bullet_x === 220 && bullet_y < wall_y + 153 || bullet_y === -30)) return false;
-        if (bullet_y > wall_y) console.log("fuck" + " " + bullet_y);
+        
     }
 
     function updateScore() {

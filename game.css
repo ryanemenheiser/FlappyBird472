@@ -38,6 +38,16 @@
     top: -50px;
 }
 
+#gameOver {
+    font-size: 30px;
+    color: black;
+    position: absolute;
+    z-index: +1;
+    top: 300px;
+    right: 50px;
+    display: none;
+}
+
 #gameScore {
     height: 100%;
     font-size: 30px;
