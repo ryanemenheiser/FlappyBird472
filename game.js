@@ -66,6 +66,16 @@ document.addEventListener('DOMContentLoaded', () => {
         // }
         // rotate(-30);
         // setInterval(rotate(0), 2000);
+        function rotate(degree) {
+            bird.style.transform = 'rotate(' + degree + "deg)";
+        }
+        rotate(-30);
+        setTimeout(function() {
+            rotate(-15);
+        }, 100);
+        setTimeout(function() {
+            rotate(0);
+        }, 100);
     }
     document.addEventListener('keyup', controller);
 
